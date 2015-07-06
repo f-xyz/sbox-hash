@@ -65,4 +65,3 @@ function sBox(input, seed) {
 }
 
 module.exports = sBox;
-
