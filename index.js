@@ -1,4 +1,4 @@
-const sBoxTable = [
+var sBoxTable = [
     0x4660c395, 0x3baba6c5, 0x27ec605b, 0xdfc1d81a, 0xaaac4406, 0x3783e9b8, 0xa4e87c68, 0x62dc1b2a,
     0xa8830d34, 0x10a56307, 0x4ba469e3, 0x54836450, 0x1b0223d4, 0x23312e32, 0xc04e13fe, 0x3b3d61fa,
     0xdab2d0ea, 0x297286b1, 0x73dbf93f, 0x6bb1158b, 0x46867fe2, 0xb7fb5313, 0x3146f063, 0x4fd4c7cb,
@@ -39,7 +39,7 @@ const sBoxTable = [
  * @returns {int}
  * @constructor
  */
-module.exports = function (input, seed) {
+function sBox(input, seed) {
     var len = input.length;
     var hash = len + (seed || 0);
 
@@ -57,39 +57,7 @@ module.exports = function (input, seed) {
     hash += (hash >> 22) ^ (hash << 4);
 
     return hash;
-};
+}
 
-///////////////////////////////////////////////////////////////////////////////
-
-var sBox = module.exports;
-var chai = require('chai');
-var benchmark = require('micro-benchmark');
-
-chai.should();
-
-describe('sBox() tests', function () {
-
-    it('creates hash', function () {
-        sBox('0123456789', 123).should.eq(-1255785694);
-    });
-
-    it('respects seed', function () {
-        sBox('0123456789', 100500).should.eq(-4200553719);
-    });
-
-    it('creates hash from empty input', function () {
-        sBox('').should.eq(0);
-    });
-
-    it('creates hash from empty input with seed', function () {
-        sBox('', 123).should.eq(2091);
-    });
-
-    var result = benchmark.profile(function () {
-        var bigString = new Array(1e3 + 1).join('a');
-        return sBox(bigString, 100500);
-    }, { duration: 1000, maxOperations: Infinity });
-
-    it('benchmark: ' + (result.ops/1000).toFixed(2) + ' Kops', function () {});
-});
+module.exports = sBox;
 
