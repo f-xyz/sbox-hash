@@ -22,6 +22,10 @@ describe('sBox() tests', function () {
         sBox('', 123).should.eq(2091);
     });
 
+    it('respect UTF-16', function () {
+        sBox('??????').should.eq(-6278692469);
+    });
+
     var result = benchmark.profile(function () {
         var bigString = new Array(1e3 + 1).join('a');
         return sBox(bigString, 100500);
