@@ -44,3 +44,7 @@ finline u32 fastcall SBox( const u8 *key, u32 len, u32 seed ) {
 	return h;
 }
 */
+
+function SBox(key, seed) {
+    //
+}
