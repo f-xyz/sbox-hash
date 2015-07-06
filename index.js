@@ -48,14 +48,14 @@ function sBox(input, seed) {
     var len = input.length;
     var hash = len + (seed || 0);
 
-    for (; (len & -2); len -= 2) {
+    for (; (len > 0); len -= 2) {
         var iInput = input.length - len;
         var charCode1 = input.charCodeAt(iInput) % 256;
         var charCode2 = input.charCodeAt(iInput+1) % 256;
         hash = 3 * (((hash ^ sBoxTable[charCode1]) * 3) ^ sBoxTable[charCode2]);
     }
 
-    if ((len & 1)) {
+    if (len != 0) {
         hash = (hash ^ sBoxTable[input[0]]) * 3;
     }
 

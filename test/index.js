@@ -7,15 +7,19 @@ chai.should();
 describe('sBox() tests', function () {
 
     it('creates hash', function () {
-        sBox('0123456789', 123).should.eq(-1255785694);
+        sBox('0123456789').should.eq(-1439674516);
     });
 
-    it('respects seed', function () {
-        sBox('0123456789', 100500).should.eq(-4200553719);
+    it('creates hash from string with odd length', function () {
+        sBox('012345678').should.eq(843962402);
     });
 
     it('creates hash from empty input', function () {
         sBox('').should.eq(0);
+    });
+
+    it('respects seed', function () {
+        sBox('0123456789', 100500).should.eq(-4200553719);
     });
 
     it('creates hash from empty input with seed', function () {
