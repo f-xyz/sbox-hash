@@ -40,40 +40,56 @@ const sBoxTable = [
  * @constructor
  */
 module.exports = function (input, seed) {
-    var  len = input.length;
-    var hash = input.length + (seed || 0);
-    var i = 0, j = len;
-    var ptrInput = input.slice(i, 2);
-    for (; (j & ~1); i += 2, j -= 2, ptrInput = input.slice(i, 2)) {
-        hash = 3 * (((hash ^ sBoxTable[ptrInput[0]]) * 3) ^ sBoxTable[ptrInput[1]]);
+    var len = input.length;
+    var hash = len + (seed || 0);
+
+    for (; (len & -2); len -= 2) {
+        var iInput = input.length - len;
+        var charCode1 = input.charCodeAt(iInput) % 256;
+        var charCode2 = input.charCodeAt(iInput+1) % 256;
+        hash = 3 * (((hash ^ sBoxTable[charCode1]) * 3) ^ sBoxTable[charCode2]);
     }
-    if ((j & 1)) {
-        hash = (hash ^ sBoxTable[ptrInput[0]]) * 3;
+
+    if ((len & 1)) {
+        hash = (hash ^ sBoxTable[input[0]]) * 3;
     }
+
     hash += (hash >> 22) ^ (hash << 4);
+
     return hash;
 };
 
-/*
-finline u32 fastcall sBox( const u8 *key, u32 len, u32 seed ) {
-	u32 h = len + seed;
-	for ( ; len & ~1; len -= 2, key += 2 )
-		h = ( ( ( h ^ SBoxTable[key[0]] ) * 3 ) ^ SBoxTable[key[1]] ) * 3;
-	if ( len & 1 )
-		h = ( h ^ SBoxTable[key[0]] ) * 3;
-	h += ( h >> 22 ) ^ ( h << 4 );
-	return h;
-}
-*/
+///////////////////////////////////////////////////////////////////////////////
 
-require('chai').should();
 var sBox = module.exports;
+var chai = require('chai');
+var benchmark = require('micro-benchmark');
+
+chai.should();
+
 describe('sBox() tests', function () {
+
     it('creates hash', function () {
-        sBox('123', 123).should.eq(-4251536629);
-        sBox('321', 123).should.eq(1569490998);
+        sBox('0123456789', 123).should.eq(-1255785694);
     });
+
     it('respects seed', function () {
-        sBox('123', 100500).should.eq(-3887185477);
+        sBox('0123456789', 100500).should.eq(-4200553719);
     });
+
+    it('creates hash from empty input', function () {
+        sBox('').should.eq(0);
+    });
+
+    it('creates hash from empty input with seed', function () {
+        sBox('', 123).should.eq(2091);
+    });
+
+    var result = benchmark.profile(function () {
+        var bigString = new Array(1e3 + 1).join('a');
+        return sBox(bigString, 100500);
+    }, { duration: 1000, maxOperations: Infinity });
+
+    it('benchmark: ' + (result.ops/1000).toFixed(2) + ' Kops', function () {});
 });
+
