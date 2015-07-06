@@ -23,7 +23,7 @@ describe('sBox() tests', function () {
     });
 
     it('respect UTF-16', function () {
-        sBox('??????').should.eq(-6278692469);
+        sBox('юникод').should.eq(3985126735);
     });
 
     var result = benchmark.profile(function () {
